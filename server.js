@@ -15,6 +15,10 @@ app.use(
 );
 // Routes
 app.use("/user", require("./routes/userRoute"));
+app.use("/api", require("./routes/categoryRoute"));
+app.use("/api", require("./routes/upload"));
+app.use("/api", require("./routes/productRoute"));
+
 //Connect to Mongoo
 const URL = process.env.MONGODB_URL;
 mongoose.connect(

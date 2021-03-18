@@ -54,9 +54,32 @@ const userCtrl = {
       const isMatch = await bycryt.compare(password, user.password);
       if (!isMatch) return res.status(400).json({ msg: "Incorrect password" });
       // If login success , create access token and refresh token
-      res.json({ msg: "Login success..." });
+      const accesstoken = createAccessToken({ id: user._id });
+      const refreshtoken = createRefreshToken({ id: user._id });
+      res.cookie("refreshtoken", refreshtoken, {
+        httpOnly: true,
+        path: "/user/refresh_token",
+      });
+      res.json({ accesstoken: accesstoken });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
+    }
+  },
+  logout: async (req, res) => {
+    try {
+      res.clearCookie("refreshtoken", { path: "/user/refresh_token" });
+      return res.json("Logged out...");
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  getUser: async (req, res) => {
+    try {
+      const user = await await Users.findById(req.user.id).select("-password");
+      if (!user) return res.status(400).json({ msg: "User does not exist." });
+      res.json(user);
+    } catch (err) {
+      return res.status(500).json({ mgs: err.message });
     }
   },
 };
